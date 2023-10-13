@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "Applifi",
+    "description": "Applifi Chrome Extension",
+    "version": "1.0",
+    "action": {
+      "default_title": "Applifi Chrome Extension",  
+      "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://*.linkedin.com/*"],
+            "js": ["contentScript.js"],
+            "run_at": "document_start"
+        }
+    ],
+    "permissions": ["storage", "tabs", "scripting","activeTab"]
+  }
