@@ -10,8 +10,8 @@ from model.template import LLM_template
 app = FastAPI()
 
 TEMP_DIR = "temp"
-llm_template = LLM_template(model='...', tokenizer='...')
-llm_generate = LLM_generate(model='...', tokenizer='...')
+llm_template = LLM_template()
+llm_generate = LLM_generate()
 
 @app.post("/upload/")
 async def upload_CV(file: UploadFile):
@@ -33,7 +33,7 @@ async def upload_CV(file: UploadFile):
 @app.get("/generate")
 async def generate_cover_letters(cv_filepath: str, job_des_text: str):
     try:
-        cv_text = get_text(cv_filepath)
+        cv_text = get_text(os.path.join('temp',cv_filepath))
     except Exception as e:
         return JSONResponse(status_code=500,
                             content={"msg":"failed to get text from PDF",
