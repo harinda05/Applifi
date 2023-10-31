@@ -17,5 +17,8 @@
             "run_at": "document_start"
         }
     ],
-    "permissions": ["storage", "tabs", "scripting","activeTab"]
+    "permissions": ["storage", "tabs", "scripting","activeTab"],
+    "host_permissions": [
+        "<all_urls>"
+    ]
   }

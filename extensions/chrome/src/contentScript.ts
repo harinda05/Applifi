@@ -1,5 +1,5 @@
 import { RuntimeCommandType_CBC } from "./enum_store/linkedin_enums";
-import { RunTimeMessage_CBC } from "./obj_store/msg_objs";
+import { JobDetails_CB, RunTimeMessage_CBC } from "./obj_store/msg_objs";
 
 
 chrome.runtime.onMessage.addListener(async (message: RunTimeMessage_CBC, sender, response) => {
@@ -25,9 +25,9 @@ chrome.runtime.onMessage.addListener(async (message: RunTimeMessage_CBC, sender,
         }
         console.log(jobDetails)
 
-        let job_detail_resp = {
+        let job_detail_resp: JobDetails_CB = {
             title: jobTitle,
-            details: jobDetails
+            description: jobDetails
         }
 
         response(job_detail_resp)
