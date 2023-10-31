@@ -8,7 +8,11 @@ export enum RuntimeCommandType_PBP {
     enable_generate_event,
     disable_generate_event,
     generate_btn_click_event,
-    request_enable_generate_event
+    request_enable_generate_event,
+    request_enable_setup_event,
+    enable_setup_event,
+    disable_setup_event,
+    file_upload_event
 }
 
 // RuntimeCommandType ContentScript Background ContentScript
