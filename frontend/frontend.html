@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text and PDF Upload</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <textarea id="textArea" placeholder="Paste the job description here"></textarea>
+        <input type="file" id="fileInput" accept=".pdf">
+        <button type="submit">Upload</button>
+    </form>
+
+    <div id="analysisResult"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
