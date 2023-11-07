@@ -1,13 +1,32 @@
 {
   "devDependencies": {
     "@types/chrome": "^0.0.246",
+    "@types/jquery": "^3.5.24",
+    "@types/pouchdb": "^6.4.1",
+    "@types/selenium-webdriver": "^4.1.19",
+    "assert": "^2.1.0",
+    "browserify": "^17.0.0",
+    "buffer": "^6.0.3",
     "copy-webpack-plugin": "^11.0.0",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
     "ts-loader": "^9.5.0",
+    "tsify": "^5.0.4",
     "typescript": "^5.2.2",
+    "url": "^0.11.3",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   },
   "scripts": {
     "build": "webpack --config webpack/webpack.config.js"
+  },
+  "dependencies": {
+    "axios": "^1.5.1",
+    "file-base64": "^1.0.0",
+    "pouchdb": "^8.0.1"
   }
 }

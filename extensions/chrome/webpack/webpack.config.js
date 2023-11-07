@@ -1,10 +1,16 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+
+
 module.exports = {
    mode: "production",
+
+   
+
    entry: {
       background: path.resolve(__dirname, "..", "src", "background.ts"),
       contentScript: path.resolve(__dirname, '..', 'src', 'contentScript.ts'), // Include contentScript.ts
+      next: path.resolve(__dirname, '..', 'src', 'next.ts')
    },
    output: {
       path: path.join(__dirname, "../dist"),
@@ -27,4 +33,6 @@ module.exports = {
          patterns: [{from: ".", to: ".", context: "public"}]
       }),
    ],
+
+   target: 'web'
 };
