@@ -49,32 +49,33 @@ window.addEventListener("load", async () => {
 
     console.log('checking for resume')
     let checkResumeExist: Boolean = false;
-    db.getAttachment("doc", "resume").then(function (blobOrBuffer) {
-        console.log('resume exists')
-        console.log(blobOrBuffer)  
-        fileInput.setAttribute("disabled", "true");
+    
+    // db.getAttachment("doc", "resume").then(function (blobOrBuffer) {
+    //     console.log('resume exists')
+    //     console.log(blobOrBuffer)  
+    //     fileInput.setAttribute("disabled", "true");
 
-        //----------------------------------------
-        const file = new File([blobOrBuffer], "resume.pdf", {
-            type: "application/pdf",
-          });
+    //     //----------------------------------------
+    //     const file = new File([blobOrBuffer], "resume.pdf", {
+    //         type: "application/pdf",
+    //       });
           
-          // Create a new URL object from the File object.
-          const url = URL.createObjectURL(file);
+    //       // Create a new URL object from the File object.
+    //       const url = URL.createObjectURL(file);
           
-          // Create a new anchor element and set its `href` attribute to the URL object.
-          const anchorElement = document.createElement("a");
-          anchorElement.href = url;
-          anchorElement.textContent = "Download Resume";
-          anchorElement.download = "resume_1.pdf";
+    //       // Create a new anchor element and set its `href` attribute to the URL object.
+    //       const anchorElement = document.createElement("a");
+    //       anchorElement.href = url;
+    //       anchorElement.textContent = "Download Resume";
+    //       anchorElement.download = "resume_1.pdf";
 
-          // Append the anchor element to the popup HTML.
-          document.body.appendChild(anchorElement);
+    //       // Append the anchor element to the popup HTML.
+    //       document.body.appendChild(anchorElement);
 
-    }).catch(function (err) {
-        console.log('resume not found')
-        console.log(err);
-    });
+    // }).catch(function (err) {
+    //     console.log('resume not found')
+    //     console.log(err);
+    // });
   });
 
 
