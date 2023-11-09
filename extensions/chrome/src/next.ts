@@ -1,29 +1,65 @@
 import { RuntimeCommandType_PBP } from "../src/enum_store/linkedin_enums";
-import { RunTimeMessage_PBP } from "../src/obj_store/msg_objs";
+import { RunTimeMessage_PBP, pendingJob } from "../src/obj_store/msg_objs";
 let generateBtn = document.getElementById("generateButton")
       import PouchDB from "pouchdb";
+      import PouchDBFind  from 'pouchdb-find';
+      PouchDB.plugin(PouchDBFind );
 
 
-// chrome.runtime.onMessage.addListener((message: RunTimeMessage, sender, sendResponse)  => {
-//     // Check if the message indicates to enable the button
-//     console.log('activate generate btn event')
-
-// });
-
+      // Get the file input element.
+const fileInput = document.querySelector('#file-input') as HTMLInputElement;
+const db = new PouchDB("my-pouchdb");
+const state_db = new PouchDB("state-db")
 
 if(generateBtn){
     generateBtn.addEventListener("click", function () {
+
+        let uId = Date.now() + getRandomInt(99999)
         let generate_btn_clicked_message: RunTimeMessage_PBP = {
-            type :RuntimeCommandType_PBP.generate_btn_click_event
+            type :RuntimeCommandType_PBP.generate_btn_click_event,
+            content: {
+                uId : uId
+            }
         }
-        chrome.runtime.sendMessage(generate_btn_clicked_message);
+        chrome.runtime.sendMessage(generate_btn_clicked_message, (response: pendingJob) => {
+            console.log("receivedResponse_fromBackground: " + response)
+
+            addPendingJobToPopup(response.uId, response.title, false)
+        });
     });
 }
 
+function addPendingJobToPopup (uId: number, title: string, fromDbFlag: boolean){
+        const generatedResultsDiv = document.querySelector('.generated-results');
+        const resultItemDiv = document.createElement('div');
+        resultItemDiv.classList.add('result-item');
+        resultItemDiv.id = String(uId)
 
-// Get the file input element.
-const fileInput = document.querySelector('#file-input') as HTMLInputElement;
-const db = new PouchDB("my-pouchdb");
+        const paragraphElement = document.createElement('p');
+        paragraphElement.textContent = title;
+
+        const anchorElement = document.createElement('a');
+        anchorElement.href = '#';
+        anchorElement.textContent = 'Pending';
+
+        resultItemDiv.appendChild(paragraphElement);
+        resultItemDiv.appendChild(anchorElement);
+
+        if(generatedResultsDiv){
+            generatedResultsDiv.appendChild(resultItemDiv);}
+
+        //persist for popup reload ---------- refactor
+
+        if(!fromDbFlag){
+            var doc = {
+                "_id": String(uId),
+                "state": "pending",
+                "title": title
+              };
+            state_db.put(doc);  
+        }
+        
+}
 
 // Run the code when the popup opens.
 window.addEventListener("load", async () => {
@@ -44,6 +80,8 @@ window.addEventListener("load", async () => {
             }
         }
     });
+
+
 
     // ------------------
 
@@ -76,8 +114,27 @@ window.addEventListener("load", async () => {
     //     console.log('resume not found')
     //     console.log(err);
     // });
+
+    await filterAllDocuments()
   });
 
+
+  async function filterAllDocuments() {
+    state_db.allDocs({
+        include_docs: true
+      }).then(function (results) {
+        results.rows.forEach((item: any) => {
+            console.log(JSON.stringify(item))
+            if(item['doc'].state == 'pending' && item['doc'].title){
+                console.log('Found pending job: ' + item['doc']._id)
+                addPendingJobToPopup(item['doc']._id, item['doc'].title, true)
+            }
+        })
+        // handle result
+      }).catch(function (err) {
+        console.log(err);
+      });
+  }
 
 
 if(fileInput){
@@ -104,5 +161,9 @@ if(fileInput){
       });
 }
 
+
+function getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+  }
   
 

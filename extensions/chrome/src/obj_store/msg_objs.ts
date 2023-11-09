@@ -12,6 +12,11 @@ export type RunTimeMessage_CBC = {
 } 
 
 export type JobDetails_CB = {
-    title: string | null,
+    title: string,
     description: string | null
+}
+
+export type pendingJob = {
+    title: string,
+    uId: number
 }

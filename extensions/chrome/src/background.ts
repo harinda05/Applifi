@@ -1,6 +1,6 @@
 import { TabMessage } from "./obj_store/linkedin_objs"
 import { Pagetype, RuntimeCommandType_CBC, RuntimeCommandType_PBP } from "./enum_store/linkedin_enums"
-import { RunTimeMessage_CBC, RunTimeMessage_PBP } from "./obj_store/msg_objs"
+import { JobDetails_CB, RunTimeMessage_CBC, RunTimeMessage_PBP, pendingJob } from "./obj_store/msg_objs"
 import PouchDB from "pouchdb";
 import { ConsoleLogEntry } from "selenium-webdriver/bidi/logEntries";
 
@@ -60,6 +60,10 @@ chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender, sendR
         let get_job_description_cs_message: RunTimeMessage_CBC = {
             type: RuntimeCommandType_CBC.get_job_details_request_search_jobs
         }
+
+        let jobUId = message.content.uId;
+        let title: string = '';
+        
         if (active_tab.id) {
 
             let file: File;
@@ -73,8 +77,12 @@ chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender, sendR
                   console.log(file.size) 
                 })
 
-            chrome.tabs.sendMessage(active_tab.id, get_job_description_cs_message, response => {
+            chrome.tabs.sendMessage(active_tab.id, get_job_description_cs_message, (response: JobDetails_CB) => {
                 const boundary = '--------------------------' + Math.floor(Math.random() * 1000000000);
+
+                title = response.title
+                console.log('This is title before: ' + title)
+
 
                 let formData    = new FormData();
                 formData.append( 'description', JSON.stringify(response) );
@@ -97,12 +105,26 @@ chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender, sendR
                     .then(data => {
                         // Handle the response data
                         console.log(data);
+                        
                     })
                     .catch(error => {
                         // Handle any errors
                         console.error('Fetch error:', error);
                     });
+
+                    console.log('This is title after: ' + title)
+                    let pendingJobResponse: pendingJob = {
+                        title: title,
+                        uId: jobUId
+                    };
+                    // Send Response of a Pending task
+
+                    console.log("sendResponse_bacckground: " + sendResponse)
+                    sendResponse(pendingJobResponse)
+                    
             });
+
+            return true
         } else {
             console.error('missing tab id')
         }

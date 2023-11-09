@@ -27,6 +27,8 @@
   "dependencies": {
     "axios": "^1.5.1",
     "file-base64": "^1.0.0",
-    "pouchdb": "^8.0.1"
+    "pouchdb": "^8.0.1",
+    "pouchdb-browser": "^8.0.1",
+    "pouchdb-find": "^8.0.1"
   }
 }
