@@ -2,6 +2,7 @@ import { TabMessage } from "./obj_store/linkedin_objs"
 import { Pagetype, RuntimeCommandType_CBC, RuntimeCommandType_PBP } from "./enum_store/linkedin_enums"
 import { RunTimeMessage_CBC, RunTimeMessage_PBP } from "./obj_store/msg_objs"
 import PouchDB from "pouchdb";
+import { ConsoleLogEntry } from "selenium-webdriver/bidi/logEntries";
 
 let active_tab: chrome.tabs.Tab;
 
@@ -83,15 +84,15 @@ chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender, sendR
                     body: formData // Convert the data to JSON format
                 };
 
-                console.log('formDAta ===>' + formData)
+                console.log('formDAta ===>' + JSON.stringify(formData))
 
-                // Send the POST request
+                // Send the POST request ----------------> !!!!! This needs to be updated with a socket connection !!!!! 
                 fetch(server_uri, options)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
                         }
-                        return response.json(); // Parse the response JSON
+                        console.log(JSON.stringify(response)); // Parse the response JSON
                     })
                     .then(data => {
                         // Handle the response data
