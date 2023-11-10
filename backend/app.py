@@ -7,6 +7,7 @@ from pdf2text import get_text
 from langchain.llms import Ollama
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.prompts import PromptTemplate
 
 llm = Ollama(
     model="mistral", callback_manager=CallbackManager([StreamingStdOutCallbackHandler()])
@@ -42,7 +43,9 @@ async def generate_cover_letters(cv_filepath: str, job_des_text: str):
                             content={"msg":"failed to get text from PDF",
                                      "cv_filepath": cv_filepath,
                                      "error": str(e)})
-    res = llm("Generate a cover letter for the job description tailored to the CV " + job_des_text + cv_text)
+    skills = llm("identify key skills from the cv" + cv_text)
+    # TODO: filter the skills extracted here by comparing with cv text
+    res = llm("Generate a cover letter for the job description tailored to the CV using the key skills mentioned " + job_des_text + cv_text + skills)
     return res
 
 
