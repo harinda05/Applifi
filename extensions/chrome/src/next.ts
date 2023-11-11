@@ -86,8 +86,47 @@ function editResultItemWhenComplete(uId: string){
     // Update the link text.
     const linkElement = divElement.querySelector('a');
     linkElement!.textContent = 'Download';
+    linkElement!.id = uId
+
+    // Bind the click event listener to the linkElement.
+    linkElement!.addEventListener('click', handleLinkClick);
     console.log("???????????? Done Download Set ???????????????")
 }
+
+// Event handler function
+function handleLinkClick(event:any) {
+    // Get the linkElement's id.
+    const linkElementId = event.target.id;
+  
+    console.log("U clicked on jobid: " + linkElementId)
+    
+    db.get(linkElementId).then(function (doc) {
+        console.log('Cover letter exists')
+        console.log(JSON.stringify(doc))  
+
+        let intermediateDocObject: any = JSON.parse(JSON.stringify(doc))
+
+        // Save the string as a text file.
+        const blob = new Blob([intermediateDocObject.coverLetter], { type: 'text/plain' });
+        const url_ = window.URL.createObjectURL(blob);
+
+        // Create a hidden link element and set its href attribute to the URL of the Blob.
+        const hiddenLinkElement = document.createElement('a');
+        hiddenLinkElement.download = linkElementId + '.txt';
+        hiddenLinkElement.href = url_;
+
+        // Append the hidden link element to the document body and click it.
+        document.body.appendChild(hiddenLinkElement);
+        hiddenLinkElement.click();
+
+        // Remove the hidden link element from the document body.
+        document.body.removeChild(hiddenLinkElement);
+
+    }).catch(function (err) {
+        console.log('resume not found')
+        console.log(err);
+    });
+  }
 
 // Run the code when the popup opens.
 window.addEventListener("load", async () => {
@@ -169,6 +208,8 @@ window.addEventListener("load", async () => {
   }
 
 
+
+
 if(fileInput){
     fileInput.addEventListener('change', () => {
         // Get the selected file.
@@ -192,6 +233,7 @@ if(fileInput){
         }
       });
 }
+
 
 
 function getRandomInt(max: number) {
