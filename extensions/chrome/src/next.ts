@@ -5,11 +5,26 @@ let generateBtn = document.getElementById("generateButton")
       import PouchDBFind  from 'pouchdb-find';
       PouchDB.plugin(PouchDBFind );
 
-
       // Get the file input element.
 const fileInput = document.querySelector('#file-input') as HTMLInputElement;
 const db = new PouchDB("my-pouchdb");
 const state_db = new PouchDB("state-db")
+
+chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender) => {
+    console.info(":::::::::::::::::::::::::: message Received :::::::::::::: + \n" + JSON.stringify(message))
+    if(message.type === RuntimeCommandType_PBP.alert_coverletter_complete){
+        
+        editResultItemWhenComplete(message.content.uId)
+
+        // in a diff workflow
+        db.get(message.content.uId).then(function (doc) {
+            console.log("cover lettterrr ++++++++++++++  : " + JSON.stringify(doc))
+           
+          }).catch(function (err) {
+            console.log(err);
+          });
+    }
+})
 
 if(generateBtn){
     generateBtn.addEventListener("click", function () {
@@ -59,6 +74,19 @@ function addPendingJobToPopup (uId: number, title: string, fromDbFlag: boolean){
             state_db.put(doc);  
         }
         
+}
+
+function editResultItemWhenComplete(uId: string){
+    // Get the div element by ID.
+    const divElement = document.getElementById(uId);
+    if (!divElement) {
+        return;
+    }
+
+    // Update the link text.
+    const linkElement = divElement.querySelector('a');
+    linkElement!.textContent = 'Download';
+    console.log("???????????? Done Download Set ???????????????")
 }
 
 // Run the code when the popup opens.
@@ -124,10 +152,14 @@ window.addEventListener("load", async () => {
         include_docs: true
       }).then(function (results) {
         results.rows.forEach((item: any) => {
-            console.log(JSON.stringify(item))
-            if(item['doc'].state == 'pending' && item['doc'].title){
+            console.log("state_item: ===>" + JSON.stringify(item))
+            if(item['doc'].state == 'pending' || item['doc'].state == 'complete' && item['doc'].title){
                 console.log('Found pending job: ' + item['doc']._id)
                 addPendingJobToPopup(item['doc']._id, item['doc'].title, true)
+
+                if(item['doc'].state == 'complete'){
+                    editResultItemWhenComplete(item['doc']._id)
+                }
             }
         })
         // handle result

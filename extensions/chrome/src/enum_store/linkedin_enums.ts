@@ -12,7 +12,8 @@ export enum RuntimeCommandType_PBP {
     request_enable_setup_event,
     enable_setup_event,
     disable_setup_event,
-    file_upload_event
+    file_upload_event,
+    alert_coverletter_complete
 }
 
 // RuntimeCommandType ContentScript Background ContentScript
