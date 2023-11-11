@@ -10,6 +10,8 @@ const fileInput = document.querySelector('#file-input') as HTMLInputElement;
 const db = new PouchDB("my-pouchdb");
 const state_db = new PouchDB("state-db")
 
+const delImageIdPrefix = "del_"
+
 chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender) => {
     console.info(":::::::::::::::::::::::::: message Received :::::::::::::: + \n" + JSON.stringify(message))
     if(message.type === RuntimeCommandType_PBP.alert_coverletter_complete){
@@ -57,8 +59,14 @@ function addPendingJobToPopup (uId: number, title: string, fromDbFlag: boolean){
         anchorElement.href = '#';
         anchorElement.textContent = 'Pending';
 
+        const deleteImg = document.createElement('img');
+        deleteImg.src = 'delete-btn.png';
+        deleteImg.id = delImageIdPrefix + uId
+
         resultItemDiv.appendChild(paragraphElement);
         resultItemDiv.appendChild(anchorElement);
+        resultItemDiv.appendChild(deleteImg)
+        resultItemDiv.addEventListener('click', handleDelImageClick);
 
         if(generatedResultsDiv){
             generatedResultsDiv.appendChild(resultItemDiv);}
@@ -85,9 +93,79 @@ function editResultItemWhenComplete(uId: string){
 
     // Update the link text.
     const linkElement = divElement.querySelector('a');
-    linkElement!.textContent = 'Download';
+    linkElement!.textContent = 'Save';
+    linkElement!.id = uId
+    linkElement!.className = 'save_a'
+
+    // Bind the click event listener to the linkElement.
+    linkElement!.addEventListener('click', handleLinkClick);
     console.log("???????????? Done Download Set ???????????????")
 }
+
+function handleDelImageClick(event:any) {
+    const targetElementId = event.target.id;
+    let jobId = targetElementId.substring(4)
+    console.log("clicked on delete btn: " + jobId)
+
+    state_db.get(jobId).then(function (doc) {
+        return state_db.remove(doc);
+      }).
+      
+      then(()=>{
+        db.get(jobId).then(function (doc) {
+            return db.remove(doc);
+          })
+      }).
+
+      then(() => {
+        const delElement = document.getElementById(jobId);
+        if (!delElement) {
+            return;
+        } else {
+            delElement.parentNode!.removeChild(delElement)
+        }
+      })
+      
+      .catch(err => {
+        console.log(err);
+      });
+}
+
+
+// Event handler function
+function handleLinkClick(event:any) {
+    // Get the linkElement's id.
+    const linkElementId = event.target.id;
+  
+    console.log("U clicked on jobid: " + linkElementId)
+    
+    db.get(linkElementId).then(function (doc) {
+        console.log('Cover letter exists')
+        console.log(JSON.stringify(doc))  
+
+        let intermediateDocObject: any = JSON.parse(JSON.stringify(doc))
+
+        // Save the string as a text file.
+        const blob = new Blob([intermediateDocObject.coverLetter], { type: 'text/plain' });
+        const url_ = window.URL.createObjectURL(blob);
+
+        // Create a hidden link element and set its href attribute to the URL of the Blob.
+        const hiddenLinkElement = document.createElement('a');
+        hiddenLinkElement.download = linkElementId + '.txt';
+        hiddenLinkElement.href = url_;
+
+        // Append the hidden link element to the document body and click it.
+        document.body.appendChild(hiddenLinkElement);
+        hiddenLinkElement.click();
+
+        // Remove the hidden link element from the document body.
+        document.body.removeChild(hiddenLinkElement);
+
+    }).catch(function (err) {
+        console.log('resume not found')
+        console.log(err);
+    });
+  }
 
 // Run the code when the popup opens.
 window.addEventListener("load", async () => {
@@ -169,6 +247,8 @@ window.addEventListener("load", async () => {
   }
 
 
+
+
 if(fileInput){
     fileInput.addEventListener('change', () => {
         // Get the selected file.
@@ -192,6 +272,7 @@ if(fileInput){
         }
       });
 }
+
 
 
 function getRandomInt(max: number) {
