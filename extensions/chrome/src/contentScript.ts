@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener(async (message: RunTimeMessage_CBC, sender,
         console.log(jobDetails)
 
         let job_detail_resp: JobDetails_CB = {
-            title: jobTitle,
+            title: jobTitle == null ? '' : jobTitle,
             description: jobDetails
         }
 
