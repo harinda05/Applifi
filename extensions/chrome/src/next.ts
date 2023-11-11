@@ -10,6 +10,8 @@ const fileInput = document.querySelector('#file-input') as HTMLInputElement;
 const db = new PouchDB("my-pouchdb");
 const state_db = new PouchDB("state-db")
 
+const delImageIdPrefix = "del_"
+
 chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender) => {
     console.info(":::::::::::::::::::::::::: message Received :::::::::::::: + \n" + JSON.stringify(message))
     if(message.type === RuntimeCommandType_PBP.alert_coverletter_complete){
@@ -57,8 +59,14 @@ function addPendingJobToPopup (uId: number, title: string, fromDbFlag: boolean){
         anchorElement.href = '#';
         anchorElement.textContent = 'Pending';
 
+        const deleteImg = document.createElement('img');
+        deleteImg.src = 'delete-btn.png';
+        deleteImg.id = delImageIdPrefix + uId
+
         resultItemDiv.appendChild(paragraphElement);
         resultItemDiv.appendChild(anchorElement);
+        resultItemDiv.appendChild(deleteImg)
+        resultItemDiv.addEventListener('click', handleDelImageClick);
 
         if(generatedResultsDiv){
             generatedResultsDiv.appendChild(resultItemDiv);}
@@ -85,13 +93,44 @@ function editResultItemWhenComplete(uId: string){
 
     // Update the link text.
     const linkElement = divElement.querySelector('a');
-    linkElement!.textContent = 'Download';
+    linkElement!.textContent = 'Save';
     linkElement!.id = uId
+    linkElement!.className = 'save_a'
 
     // Bind the click event listener to the linkElement.
     linkElement!.addEventListener('click', handleLinkClick);
     console.log("???????????? Done Download Set ???????????????")
 }
+
+function handleDelImageClick(event:any) {
+    const targetElementId = event.target.id;
+    let jobId = targetElementId.substring(4)
+    console.log("clicked on delete btn: " + jobId)
+
+    state_db.get(jobId).then(function (doc) {
+        return state_db.remove(doc);
+      }).
+      
+      then(()=>{
+        db.get(jobId).then(function (doc) {
+            return db.remove(doc);
+          })
+      }).
+
+      then(() => {
+        const delElement = document.getElementById(jobId);
+        if (!delElement) {
+            return;
+        } else {
+            delElement.parentNode!.removeChild(delElement)
+        }
+      })
+      
+      .catch(err => {
+        console.log(err);
+      });
+}
+
 
 // Event handler function
 function handleLinkClick(event:any) {
