@@ -66,6 +66,7 @@ chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender, sendR
         }
 
         let jobUId = message.content.uId;
+        let useChatGpt = message.content.useChatGpt;
         let title: string = '';
         
         if (active_tab.id) {
@@ -93,6 +94,7 @@ chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender, sendR
                 formData.append( 'resume', file );
                 formData.append( 'sessionId', sessionId)
                 formData.append( 'jobId', jobUId)
+                formData.append( 'useChatGpt', useChatGpt)
 
                 const options = {
                     method: 'POST',

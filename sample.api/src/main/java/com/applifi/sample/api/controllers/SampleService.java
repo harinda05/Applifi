@@ -32,7 +32,7 @@ public class SampleService {
 	}
 
     @PostMapping("/generate-cover-letter")
-    public String generateCoverLetter(@RequestParam("description") String description, @RequestParam("resume") MultipartFile resume, @RequestParam("sessionId") String sessionId, @RequestParam("jobId") String jobId){
+    public String generateCoverLetter(@RequestParam("description") String description, @RequestParam("resume") MultipartFile resume, @RequestParam("sessionId") String sessionId, @RequestParam("jobId") String jobId,  @RequestParam("useChatGpt") boolean useChatGpt){
 
 
         ResponseClss rsp = new ResponseClss();
@@ -56,7 +56,13 @@ public class SampleService {
 
         System.out.println(resumeString);
 
-       mockThread(sessionId,rsp, resumeString, description);
+
+        if(useChatGpt){
+            System.out.println("Using ChatGPT");
+            mockThreadGPT(sessionId,rsp, resumeString, description);
+        } else {
+            /*** Ayush & Pritom Please Implement This */
+        }
 
         ResponseClss rsp_ack = new ResponseClss();
         rsp_ack.setResponseType("ack");
@@ -65,7 +71,7 @@ public class SampleService {
         return str; 
     }
 
-    private static void mockThread(String sessionId, ResponseClss responseClss, String resume, String jobDescription){
+    private static void mockThreadGPT(String sessionId, ResponseClss responseClss, String resume, String jobDescription){
         Thread one = new Thread() {
             public void run() {
                 try {
