@@ -7,6 +7,8 @@ let generateBtn = document.getElementById("generateButton")
 
       // Get the file input element.
 const fileInput = document.querySelector('#file-input') as HTMLInputElement;
+const chatGPTToggle: HTMLInputElement = document.getElementById('chatGPTToggle') as HTMLInputElement;
+
 const db = new PouchDB("my-pouchdb");
 const state_db = new PouchDB("state-db")
 
@@ -29,13 +31,22 @@ chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender) => {
 })
 
 if(generateBtn){
+
     generateBtn.addEventListener("click", function () {
+      let useChatGpt = false;
+      if (chatGPTToggle != null && chatGPTToggle.checked) {
+        console.log('Chat GPT toggle is ON');
+        useChatGpt = true
+      } else {
+        console.log('Chat GPT toggle is off');
+      }
 
         let uId = Date.now() + getRandomInt(99999)
         let generate_btn_clicked_message: RunTimeMessage_PBP = {
             type :RuntimeCommandType_PBP.generate_btn_click_event,
             content: {
-                uId : uId
+                uId : uId,
+                useChatGpt: useChatGpt
             }
         }
         chrome.runtime.sendMessage(generate_btn_clicked_message, (response: pendingJob) => {

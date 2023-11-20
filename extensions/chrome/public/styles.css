@@ -88,3 +88,23 @@ body {
     flex: 5%;
     margin: 5;
   }
+  
+  #chatGPTToggle {
+    appearance: none;
+    width: 35px;
+    height: 17px;
+    background-color: #ccc;
+    border-radius: 15px;
+    transition: background-color 0.2s ease-in-out;
+    cursor: pointer;
+  }
+  
+  #chatGPTToggle:checked {
+    background-color: #2196F3;
+  }
+  
+  .generate-div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
