@@ -108,3 +108,14 @@ body {
     align-items: center;
     gap: 10px;
   }
+
+  .setup-div #file-input-label {
+    display: block;
+    width: auto;
+    padding: 10px;
+    background-color: #2196F3;
+    color: white;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+  }

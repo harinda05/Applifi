@@ -6,13 +6,15 @@ let generateBtn = document.getElementById("generateButton")
       PouchDB.plugin(PouchDBFind );
 
       // Get the file input element.
-const fileInput = document.querySelector('#file-input') as HTMLInputElement;
 const chatGPTToggle: HTMLInputElement = document.getElementById('chatGPTToggle') as HTMLInputElement;
 
 const db = new PouchDB("my-pouchdb");
 const state_db = new PouchDB("state-db")
 
 const delImageIdPrefix = "del_"
+
+const fileInputLabel = document.querySelector('#file-input-label') as HTMLInputElement;
+
 
 chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender) => {
     console.info(":::::::::::::::::::::::::: message Received :::::::::::::: + \n" + JSON.stringify(message))
@@ -204,28 +206,49 @@ window.addEventListener("load", async () => {
 
     console.log('checking for resume')
     let checkResumeExist: Boolean = false;
+
+    setTimeout(() => {
+      db.get("doc").then(function (item) {
+        if(item){
+          console.log('resume exists..........')
+          let intermediateDocObject: any = JSON.parse(JSON.stringify(item))
+
+          if(fileInputLabel){
+            console.log('fileinput exists')
+            updateFileInputLabel(intermediateDocObject.name )
+          } else {
+            console.log('no fileinput')
+          }
+
+        } else {
+          console.log('No resume found')
+        }    
+      });
+    }, 0);
     
-    // db.getAttachment("doc", "resume").then(function (blobOrBuffer) {
-    //     console.log('resume exists')
-    //     console.log(blobOrBuffer)  
-    //     fileInput.setAttribute("disabled", "true");
+    // db.get("doc").then(function (item) {
+    //     console.log('resume exists..........')
+    //     fileInput.select()
+    //     fileInput.placeholder =  "file exists";
 
-    //     //----------------------------------------
-    //     const file = new File([blobOrBuffer], "resume.pdf", {
-    //         type: "application/pdf",
-    //       });
-          
-    //       // Create a new URL object from the File object.
-    //       const url = URL.createObjectURL(file);
-          
-    //       // Create a new anchor element and set its `href` attribute to the URL object.
-    //       const anchorElement = document.createElement("a");
-    //       anchorElement.href = url;
-    //       anchorElement.textContent = "Download Resume";
-    //       anchorElement.download = "resume_1.pdf";
 
-    //       // Append the anchor element to the popup HTML.
-    //       document.body.appendChild(anchorElement);
+
+        //----------------------------------------
+        // const file = new File([blobOrBuffer], "resume.pdf", {
+        //     type: "application/pdf",
+        //   });
+          
+        //   // Create a new URL object from the File object.
+        //   const url = URL.createObjectURL(file);
+          
+        //   // Create a new anchor element and set its `href` attribute to the URL object.
+        //   const anchorElement = document.createElement("a");
+        //   anchorElement.href = url;
+        //   anchorElement.textContent = "Download Resume";
+        //   anchorElement.download = "resume_1.pdf";
+
+        //   // Append the anchor element to the popup HTML.
+        //   document.body.appendChild(anchorElement);
 
     // }).catch(function (err) {
     //     console.log('resume not found')
@@ -258,6 +281,7 @@ window.addEventListener("load", async () => {
   }
 
 
+const fileInput = document.querySelector('#file-input') as HTMLInputElement;
 
 
 if(fileInput){
@@ -267,17 +291,83 @@ if(fileInput){
         if(fileInput.files != null){
             file = fileInput.files[0];
 
-            db.put({
-                _id: 'doc', 
-                _attachments: {
-                  "resume": {
-                    content_type: file.type,
-                    data: file
-                  }
-                }
-              }).then((resp) => {
-                console.log(resp)
+            db.get('doc').then(async(doc) => {
+              const rev = doc._rev
+              console.log('rev is: ' + rev)
+              await db.putAttachment('doc', 'resume', rev, file, file.type);
+              console.log("done uploading doc")
+            }).then(async () => {
+
+              console.log('changing name prop of the doc')
+              await db.get('doc', {attachments: false}).then((doc) => {
+                let intermediateDocObject: any = JSON.parse(JSON.stringify(doc))
+                db.put({
+                  _id: doc._id,
+                  _rev: doc._rev,
+                  _attachments: {
+                    "resume": {
+                      content_type: file.type,
+                      data: file
+                    }
+                  },
+                  name: file.name,
+                });
               })
+            }).then(() => {
+              updateFileInputLabel(file.name)
+            })
+            
+            .catch(err => {
+
+              if(err.message == 'missing'){
+                db.putAttachment('doc', 'resume', file, file.type).then(() => {
+
+                  db.get('doc', {attachments: false}).then((doc) => {
+                    return db.put({
+                      _id: doc._id,
+                      _rev: doc._rev,
+                      _attachments: {
+                              "resume": {
+                                content_type: file.type,
+                                data: file
+                              }
+                            },
+                      name: file.name,
+                    });
+                  }).then(() => {
+                    updateFileInputLabel(file.name)
+                  });
+                })
+
+              } else {
+                console.log('errrrrr===> '+ err)
+              }
+     
+            })
+
+
+
+            // db.get('doc').then(function(doc) {
+            //   let intermediateDocObject: any = JSON.parse(JSON.stringify(doc))
+            //   console.log("Before updateL :::::::::::" + JSON.stringify(doc))
+  
+            //   return db.put({
+            //     _id: 'doc', 
+            //     _attachments: {
+            //       "resume": {
+            //         content_type: file.type,
+            //         data: file
+            //       }
+            //     },
+            //   name: file.name
+            //   });
+  
+            // }).then(function(response) {
+            //   console.log("updated new resume response: " + response)
+            // }).catch(function (err) {
+            //   console.log(err);
+            // });
+            
         } else {
             console.error('No Resume Selected')
         }
@@ -290,4 +380,7 @@ function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }
   
+function updateFileInputLabel(fileName:string){
+    fileInputLabel.textContent = fileName + '  || Click here to Update'
+}  
 
