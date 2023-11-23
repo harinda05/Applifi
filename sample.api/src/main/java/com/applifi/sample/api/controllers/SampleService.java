@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.applifi.sample.api.handlers.WebSocketHandler;
 import com.applifi.sample.api.models.BaseResponse;
 import com.applifi.sample.api.utils.ChatGptClient;
+import com.applifi.sample.api.utils.OllamaCLient;
 import com.applifi.sample.api.utils.common.FileUtils;
 import com.google.gson.Gson;
 
@@ -62,6 +63,7 @@ public class SampleService {
             mockThreadGPT(sessionId,rsp, resumeString, description);
         } else {
             /*** Ayush & Pritom Please Implement This */
+            mockThreadMistral(sessionId,rsp, resumeString, description);
         }
 
         ResponseClss rsp_ack = new ResponseClss();
@@ -90,6 +92,28 @@ public class SampleService {
             }  
         };
         
+        one.start();
+    }
+
+    private static void mockThreadMistral(String sessionId, ResponseClss responseClss, String resume, String jobDescription){
+        Thread one = new Thread() {
+            public void run() {
+                try {
+                    String s = OllamaCLient.callOllama(resume, jobDescription);
+
+                    Thread.sleep(20000);
+
+                    responseClss.coverLetter = s;
+                    //WebSocketHandler.send(sessionId, gson.toJson(responseClss));;
+                    WebSocketHandler.send(sessionId, gson.toJson(responseClss));;
+
+                    System.out.println("Contine");
+                } catch(InterruptedException v) {
+                    System.out.println(v);
+                }
+            }
+        };
+
         one.start();
     }
 
