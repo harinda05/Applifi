@@ -13,6 +13,9 @@ const state_db = new PouchDB("state-db")
 
 const delImageIdPrefix = "del_"
 
+const fileInputLabel = document.querySelector('#file-input-label') as HTMLInputElement;
+
+
 chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender) => {
     console.info(":::::::::::::::::::::::::: message Received :::::::::::::: + \n" + JSON.stringify(message))
     if(message.type === RuntimeCommandType_PBP.alert_coverletter_complete){
@@ -179,7 +182,6 @@ function handleLinkClick(event:any) {
 
 // Run the code when the popup opens.
 window.addEventListener("load", async () => {
-    const fileInput = document.querySelector('#file-input-label') as HTMLInputElement;
 
     //generate btn 
     let enable_generate_btn_message: RunTimeMessage_PBP = {
@@ -209,10 +211,11 @@ window.addEventListener("load", async () => {
       db.get("doc").then(function (item) {
         if(item){
           console.log('resume exists..........')
+          let intermediateDocObject: any = JSON.parse(JSON.stringify(item))
 
-          if(fileInput){
+          if(fileInputLabel){
             console.log('fileinput exists')
-            fileInput.textContent = "file exists";
+            updateFileInputLabel(intermediateDocObject.name )
           } else {
             console.log('no fileinput')
           }
@@ -288,26 +291,82 @@ if(fileInput){
         if(fileInput.files != null){
             file = fileInput.files[0];
 
-            db.get('doc').then(function(doc) {
-              let intermediateDocObject: any = JSON.parse(JSON.stringify(doc))
-              console.log("Before updateL :::::::::::" + JSON.stringify(doc))
+            db.get('doc').then(async(doc) => {
+              const rev = doc._rev
+              console.log('rev is: ' + rev)
+              await db.putAttachment('doc', 'resume', rev, file, file.type);
+              console.log("done uploading doc")
+            }).then(async () => {
+
+              console.log('changing name prop of the doc')
+              await db.get('doc', {attachments: false}).then((doc) => {
+                let intermediateDocObject: any = JSON.parse(JSON.stringify(doc))
+                db.put({
+                  _id: doc._id,
+                  _rev: doc._rev,
+                  _attachments: {
+                    "resume": {
+                      content_type: file.type,
+                      data: file
+                    }
+                  },
+                  name: file.name,
+                });
+              })
+            }).then(() => {
+              updateFileInputLabel(file.name)
+            })
+            
+            .catch(err => {
+
+              if(err.message == 'missing'){
+                db.putAttachment('doc', 'resume', file, file.type).then(() => {
+
+                  db.get('doc', {attachments: false}).then((doc) => {
+                    return db.put({
+                      _id: doc._id,
+                      _rev: doc._rev,
+                      _attachments: {
+                              "resume": {
+                                content_type: file.type,
+                                data: file
+                              }
+                            },
+                      name: file.name,
+                    });
+                  }).then(() => {
+                    updateFileInputLabel(file.name)
+                  });
+                })
+
+              } else {
+                console.log('errrrrr===> '+ err)
+              }
+     
+            })
+
+
+
+            // db.get('doc').then(function(doc) {
+            //   let intermediateDocObject: any = JSON.parse(JSON.stringify(doc))
+            //   console.log("Before updateL :::::::::::" + JSON.stringify(doc))
   
-              return db.put({
-                _id: 'doc', 
-                _attachments: {
-                  "resume": {
-                    content_type: file.type,
-                    data: file
-                  }
-                },
-              name: file.name
-              });
+            //   return db.put({
+            //     _id: 'doc', 
+            //     _attachments: {
+            //       "resume": {
+            //         content_type: file.type,
+            //         data: file
+            //       }
+            //     },
+            //   name: file.name
+            //   });
   
-            }).then(function(response) {
-              console.log("updated new resume response: " + response)
-            }).catch(function (err) {
-              console.log(err);
-            });
+            // }).then(function(response) {
+            //   console.log("updated new resume response: " + response)
+            // }).catch(function (err) {
+            //   console.log(err);
+            // });
             
         } else {
             console.error('No Resume Selected')
@@ -321,4 +380,7 @@ function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }
   
+function updateFileInputLabel(fileName:string){
+    fileInputLabel.textContent = fileName + '  || Click here to Update'
+}  
 
