@@ -58,8 +58,4 @@ Science at the University of Helsinki, Finland.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/badge/contributers-blue
-[contributors-url]: https://github.com/harinda05/Strategiafi/graphs/contributors
-[product-screenshot]: images/gamewindow.png
-[java]: https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white
-[Java-url]: https://www.java.com/en/
+[contributors-url]: https://github.com/harinda05/Applifi/graphs/contributors
