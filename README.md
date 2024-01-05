@@ -1,10 +1,65 @@
-# applifi
-Large Language Model (LLM) driven automated cover letter generator for job advertisements
 
-## run backend
-1. build a virtual environment: `python -m venv venv` or `python3 -m venv venv`
-2. activate it `venc\Scripts\activate` (for windows), `source venv\bin\activate` (for linux)
-3. install packages: `pip install -r requirements.txt`
-4. download and install olama from [here](https://ollama.ai/). We need it for running the LLMs locally.
-5. then download the mistral7b model by `ollama run mistral`
-4. `cd` to backend and run backend: `uvicorn main:app --reload`. the `main` refers to the python file to run, `app` refers to a FastAPI server object. (For Ayush's last edit, it should be `uvicorn app:app --reload`)
+# Applifi
+
+A Bundle of Software that enables the user to leverage Large Language Models (LLMs) to easily generate cover letters, customized to the user's resume and the specific job advertisement the user is applying to.
+
+Applifi includes a Chrome Web Browser extension, which is primarily Integrated with LinkedIn and a backend that leverages LLMs to generate the text.
+
+### Installation
+
+1. Clone Applifi Repository
+
+   ```sh
+   git clone https://github.com/harinda05/Applifi
+   ```
+
+2. Build Applifi Chrome Extension
+
+  ```sh
+   cd \extensions\chrome\
+   ```
+
+   ```sh
+   npm run build
+   ```
+
+3. Build Applifi Backend
+
+   ```sh
+      cd \api\
+      ```
+   
+      ```sh
+      mvn clean install
+      ```
+ 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the Apache License 2.0. See `LICENSE.txt` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+This was developed as part of the course Computer Science Project, Master's in Computer
+Science at the University of Helsinki, Finland.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[![Contributors][contributors-shield]][contributors-url]
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/badge/contributers-blue
+[contributors-url]: https://github.com/harinda05/Strategiafi/graphs/contributors
+[product-screenshot]: images/gamewindow.png
+[java]: https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white
+[Java-url]: https://www.java.com/en/
