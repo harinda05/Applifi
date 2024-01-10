@@ -36,7 +36,7 @@ Applifi includes a Chrome Web Browser extension, which is primarily Integrated w
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Demo
-<iframe width="560" height="315" src="https://www.youtube.com/embed/nuLo32nHF-w?si=cIhH6x_zO3KD2mMg&amp;start=33" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/nuLo32nHF-w/0.jpg)](https://www.youtube.com/watch?v=nuLo32nHF-w)
 
 
 <!-- LICENSE -->
