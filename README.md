@@ -35,6 +35,8 @@ Applifi includes a Chrome Web Browser extension, which is primarily Integrated w
  
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Demo
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/nuLo32nHF-w/0.jpg)](https://www.youtube.com/watch?v=nuLo32nHF-w)
 
 
 <!-- LICENSE -->
