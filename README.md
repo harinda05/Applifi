@@ -35,6 +35,11 @@ Applifi includes a Chrome Web Browser extension, which is primarily Integrated w
  
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Demo
+
+<video width="100%" height="50%" controls>
+  <source src="https://drive.google.com/file/d/16REEqyczr1a-pzOdlU5VdFsjVLjyaRAF/view?usp=sharing" type="video/mp4">
+</video>
 
 
 <!-- LICENSE -->
