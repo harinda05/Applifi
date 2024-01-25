@@ -20,3 +20,13 @@ export type pendingJob = {
     title: string,
     uId: number
 }
+
+
+export type FirstMessageAfterConnection= {
+    persistentSessionId: string,
+    msgType: string
+}
+
+export type KeepAliveMessage= {
+    msgType: string
+}
