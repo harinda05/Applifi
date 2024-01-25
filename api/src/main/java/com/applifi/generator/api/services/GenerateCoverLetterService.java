@@ -33,11 +33,11 @@ public class GenerateCoverLetterService {
 
         if(generateCoverLetterModel.isUseChatGpt()){
             log.info("using gpt client to generate cover letter: session: {}, jobId: {}",generateCoverLetterModel.getSessionId(),generateCoverLetterModel.getJobId());
-            mockThreadGPT(generateCoverLetterModel.getSessionId(),generateCoverLetterModel.getDescription(),
+            runThreadGPT(generateCoverLetterModel.getSessionId(),generateCoverLetterModel.getDescription(),
                     generateCoverLetterModel.getJobId(), resumeText);
         } else {
             log.info("using ollama client to generate cover letter: session: {}, jobId: {}",generateCoverLetterModel.getSessionId(),generateCoverLetterModel.getJobId());
-            mockThreadMistral(generateCoverLetterModel.getSessionId(),generateCoverLetterModel.getDescription(),
+            runThreadMistral(generateCoverLetterModel.getSessionId(),generateCoverLetterModel.getDescription(),
                     generateCoverLetterModel.getJobId(), resumeText);
         }
 
@@ -47,7 +47,7 @@ public class GenerateCoverLetterService {
         return gson.toJson(rsp_ack);
     }
 
-    private static void mockThreadGPT(String sessionId, String jobDescription, String jobId, String resume){
+    private void runThreadGPT(String sessionId, String jobDescription, String jobId, String resume){
         Thread gptThread = new Thread(() -> {
             String generatedText = ChatGptClient.callChatGpt(resume, jobDescription);
             log.info("cover letter generated for session: {}, jobId: {} ", sessionId, jobId);
@@ -60,8 +60,7 @@ public class GenerateCoverLetterService {
     }
 
 
-
-    private static void mockThreadMistral(String sessionId, String jobDescription, String jobId, String resume){
+    private void runThreadMistral(String sessionId, String jobDescription, String jobId, String resume){
         Thread ollamaThread = new Thread(() -> {
             String generatedText = OllamaCLient.callOllama(resume, jobDescription);
             GeneratedCoverLetterResponse websocketResponse = new GeneratedCoverLetterResponse(generatedText, jobId);
