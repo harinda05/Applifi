@@ -225,35 +225,6 @@ window.addEventListener("load", async () => {
         }    
       });
     }, 0);
-    
-    // db.get("doc").then(function (item) {
-    //     console.log('resume exists..........')
-    //     fileInput.select()
-    //     fileInput.placeholder =  "file exists";
-
-
-
-        //----------------------------------------
-        // const file = new File([blobOrBuffer], "resume.pdf", {
-        //     type: "application/pdf",
-        //   });
-          
-        //   // Create a new URL object from the File object.
-        //   const url = URL.createObjectURL(file);
-          
-        //   // Create a new anchor element and set its `href` attribute to the URL object.
-        //   const anchorElement = document.createElement("a");
-        //   anchorElement.href = url;
-        //   anchorElement.textContent = "Download Resume";
-        //   anchorElement.download = "resume_1.pdf";
-
-        //   // Append the anchor element to the popup HTML.
-        //   document.body.appendChild(anchorElement);
-
-    // }).catch(function (err) {
-    //     console.log('resume not found')
-    //     console.log(err);
-    // });
 
     await filterAllDocuments()
   });
@@ -344,29 +315,6 @@ if(fileInput){
               }
      
             })
-
-
-
-            // db.get('doc').then(function(doc) {
-            //   let intermediateDocObject: any = JSON.parse(JSON.stringify(doc))
-            //   console.log("Before updateL :::::::::::" + JSON.stringify(doc))
-  
-            //   return db.put({
-            //     _id: 'doc', 
-            //     _attachments: {
-            //       "resume": {
-            //         content_type: file.type,
-            //         data: file
-            //       }
-            //     },
-            //   name: file.name
-            //   });
-  
-            // }).then(function(response) {
-            //   console.log("updated new resume response: " + response)
-            // }).catch(function (err) {
-            //   console.log(err);
-            // });
             
         } else {
             console.error('No Resume Selected')

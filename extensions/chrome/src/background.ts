@@ -2,7 +2,7 @@ import { TabMessage } from "./obj_store/linkedin_objs"
 import { Pagetype, RuntimeCommandType_CBC, RuntimeCommandType_PBP } from "./enum_store/linkedin_enums"
 import { JobDetails_CB, RunTimeMessage_CBC, RunTimeMessage_PBP, pendingJob } from "./obj_store/msg_objs"
 import PouchDB from "pouchdb";
-import {connect, webSocket, sessionId} from "./utils/websocket-provider"
+import {connect, webSocket} from "./utils/websocket-provider"
 let active_tab: chrome.tabs.Tab;
 
 let rest_server_uri = "http://localhost:8080/generate-cover-letter" // move to config
@@ -11,19 +11,8 @@ connect(server_uri)
 
 const db = new PouchDB("my-pouchdb");
 const state_db = new PouchDB("state-db")
+export let sessionId: string | Blob;
 
-// chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-//     console.log("url: " + tab.url)
-//     if(changeInfo.status === 'complete' && tab.url && tab.url.includes("linkedin.com/jobs/search/?currentJobId")){
-
-//         let enable_generate_btn_message : RunTimeMessage = {
-//             type: RuntimeCommandType.enable_generate_event
-//         }
-//         chrome.runtime.sendMessage(enable_generate_btn_message)
-//     }
-// })
-
-const websocketConn = connect(server_uri)
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
     // activeInfo contains information about the newly activated tab
@@ -41,8 +30,10 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 // listening to message from popup js
 chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender, sendResponse) => {
-    // Check if the message indicates to enable the button
+
+    // Check if the message indicates to enable the generate button
     console.log('chrome run time message received => ' + JSON.stringify(message))
+
     if (message.type === RuntimeCommandType_PBP.request_enable_generate_event) {
         console.log("active_tab => " + active_tab.url)
         let type: RuntimeCommandType_PBP;
@@ -83,7 +74,6 @@ chrome.runtime.onMessage.addListener((message: RunTimeMessage_PBP, sender, sendR
                 })
 
             chrome.tabs.sendMessage(active_tab.id, get_job_description_cs_message, (response: JobDetails_CB) => {
-                const boundary = '--------------------------' + Math.floor(Math.random() * 1000000000);
 
                 title = response.title
                 console.log('This is title before: ' + title)
@@ -198,3 +188,22 @@ export function addGeneratedCoverLetterToPouchDb(coverLetter: string, jobId: str
     }); 
 
 }
+
+export function addPersistentSessionIdtoLocalStorage(persistentSessionId: string){
+    console.log("addPersistentSessionIdtoLocalStorage ==")
+
+    chrome.storage.local.set({
+        "persistentSessionId": persistentSessionId
+      }).then(()=>{
+        console.log("setting p_id to local var")
+        sessionId = persistentSessionId;
+      });
+}
+
+
+export async function getPersistentIdFromLocalStorage(): Promise<string> {
+    console.log("getPersistentIdFromLocalStorage ==")
+    const result = await chrome.storage.local.get("persistentSessionId");
+    const myValue = result.myKey;
+    return myValue;
+  }
