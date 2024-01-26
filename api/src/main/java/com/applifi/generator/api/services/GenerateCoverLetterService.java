@@ -1,6 +1,7 @@
 package com.applifi.generator.api.services;
 
 
+import com.applifi.generator.api.controllers.WebSocketHandlerController;
 import com.applifi.generator.api.dto.BaseResponse;
 import com.applifi.generator.api.dto.GeneratedCoverLetterResponse;
 import com.applifi.generator.api.models.GenerateCoverLetterModel;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static com.applifi.generator.api.dto.ResponseTypes.REQUEST_QUEUED;
+import static com.applifi.generator.api.resources.ResponseTypes.REQUEST_QUEUED;
 
 @Service
 @Slf4j
@@ -53,7 +54,7 @@ public class GenerateCoverLetterService {
             log.info("cover letter generated for session: {}, jobId: {} ", sessionId, jobId);
 
             GeneratedCoverLetterResponse websocketResponse = new GeneratedCoverLetterResponse(generatedText, jobId);
-            WebSocketHandlerService.send(sessionId, gson.toJson(websocketResponse));;
+            WebSocketHandlerController.send(sessionId, gson.toJson(websocketResponse));
 
         });
         gptThread.start();
@@ -64,7 +65,7 @@ public class GenerateCoverLetterService {
         Thread ollamaThread = new Thread(() -> {
             String generatedText = OllamaCLient.callOllama(resume, jobDescription);
             GeneratedCoverLetterResponse websocketResponse = new GeneratedCoverLetterResponse(generatedText, jobId);
-            WebSocketHandlerService.send(sessionId, gson.toJson(websocketResponse));;
+            WebSocketHandlerController.send(sessionId, gson.toJson(websocketResponse));
 
         });
         ollamaThread.start();

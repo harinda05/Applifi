@@ -1,35 +1,35 @@
-package com.applifi.generator.api.services;
+package com.applifi.generator.api.controllers;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.applifi.generator.api.dto.*;
+import com.applifi.generator.api.dto.KeepAliveResponse;
+import com.applifi.generator.api.dto.MissingPersistentSessionIdResponse;
 import com.applifi.generator.api.resources.WebSocketMessageincomingConst;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.messaging.MessagingException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.applifi.generator.api.utils.common.StringUtils.getRandomString;
 
 @Slf4j
-@Service
-public class WebSocketHandlerService extends TextWebSocketHandler {
-    Gson gson = new Gson();
+@Controller
+public class WebSocketHandlerController extends TextWebSocketHandler {
+    private final Gson gson = new Gson();
     private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     @Override
-    public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) throws IOException {
+    public void handleMessage(@NotNull WebSocketSession session, WebSocketMessage<?> message) {
         JsonObject receivedMessage = (JsonObject) JsonParser.parseString(message.getPayload().toString());
 
         if (receivedMessage.get("msgType").getAsString().equals(WebSocketMessageincomingConst.FIRST_MESSAGE_AFTER_CONNECTION_INIT)) {
@@ -69,12 +69,12 @@ public class WebSocketHandlerService extends TextWebSocketHandler {
 
     //sessions.put(persistentSessionId, session);
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
+    public void afterConnectionEstablished(WebSocketSession session) {
         log.info("new connection est: " + session.getId());
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+    public void afterConnectionClosed(WebSocketSession session, @NotNull CloseStatus status) {
         //sessions.remove(session.getId());
         log.info("connection close session removed: " + session.getId());
     }

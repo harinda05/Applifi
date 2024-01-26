@@ -3,7 +3,7 @@ package com.applifi.generator.api.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.applifi.generator.api.dto.ResponseTypes.MISSED_PERSISTENT_SESSION_ID;
+import static com.applifi.generator.api.resources.ResponseTypes.MISSED_PERSISTENT_SESSION_ID;
 
 @Getter
 @Setter

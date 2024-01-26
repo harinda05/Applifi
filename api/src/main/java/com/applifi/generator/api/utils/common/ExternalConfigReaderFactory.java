@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
-public class ConfigReaderFactory {
+public class ExternalConfigReaderFactory {
     @Value("${application.external.config.source}")
     private String configSource;
     public ExternalConfigReader getConfigReader() {
