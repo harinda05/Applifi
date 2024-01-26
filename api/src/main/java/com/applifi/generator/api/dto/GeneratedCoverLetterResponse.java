@@ -1,11 +1,9 @@
 package com.applifi.generator.api.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.applifi.generator.api.dto.ResponseTypes.COVER_LETTER_GENERATED;
+import static com.applifi.generator.api.resources.ResponseTypes.COVER_LETTER_GENERATED;
 
 @Getter
 @Setter

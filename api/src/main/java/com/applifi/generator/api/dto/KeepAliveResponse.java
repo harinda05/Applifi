@@ -3,7 +3,7 @@ package com.applifi.generator.api.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.applifi.generator.api.dto.ResponseTypes.KEEP_ALIVE_ACK;
+import static com.applifi.generator.api.resources.ResponseTypes.KEEP_ALIVE_ACK;
 
 @Getter
 @Setter

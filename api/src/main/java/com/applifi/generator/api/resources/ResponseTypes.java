@@ -1,4 +1,4 @@
-package com.applifi.generator.api.dto;
+package com.applifi.generator.api.resources;
 
 public class ResponseTypes {
     public static final String REQUEST_QUEUED = "queued";
